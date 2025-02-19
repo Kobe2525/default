@@ -1,0 +1,60 @@
+<html>
+<head>
+<link rel="stylesheet" href="/www/style.css" />
+<title>Hello</title>
+</head>
+<body>
+    
+    <p id="dataoutW">Wanted Temperature W = <span id="valueW">0</span></p>
+    <p id="dataoutX">Actual Temperature X = <span id="valueX">0</span></p>
+    <p id="dataoutX">Verschil WX = <span id="valueWX">0</span></p>
+    <input id="temp-slider" type="range" min="0" max="40" value="20" onchange="TempSlider(this.value)" >
+    <p id="dataoutY">Airco = <span id="valueY">0</span></p>
+    <div id="dataoutYP"></div>
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+
+    <script>
+
+        function ButtonWPos(nummer) {
+            $.post("/ButtonWPos", { "getal": nummer });
+        }       
+
+        function ButtonWNeg(nummer) {
+            $.post("/ButtonWNeg", { "getal": nummer });
+        }
+
+         function TempSlider(nummer) {
+            $.post("/TempSlider", { "getal": nummer });
+        }
+
+
+
+        window.setInterval(function(){
+         $("#valueW").load("/dataoutW");  // Load the dynamic value into the span
+        }, 1000);
+
+        window.setInterval(function(){
+         $("#valueX").load("/dataoutX");  // Load the dynamic value into the span
+        }, 1000);
+
+        window.setInterval(function(){
+         $("#valueWX").load("/dataoutWX");  // Load the dynamic value into the span
+        }, 1000);
+
+        window.setInterval(function () {
+            // Load the dynamic value into the span
+            $("#valueY").load("/dataoutY");  // Load the dynamic value into the span
+        }, 1000);
+
+        window.setInterval(function () {
+            // Load the dynamic value into the span
+            $("#dataoutYP").load("/dataoutYP");  // Load the dynamic value into the span
+        }, 1000);
+
+
+
+        
+
+    </script>
+</body>
+</html>
