@@ -16,7 +16,7 @@ bmp280 = adafruit_bmp280.Adafruit_BMP280_I2C(i2c, address=0x76)
 bmp280.sea_level_pressure = 1013.25
 
 # Database connection
-conn = pymysql.connect(host='127.0.0.1', unix_socket='/var/run/mysqld/mysqld.sock', user='Smets', passwd='Thomas', db='Temp')
+conn = pymysql.connect(host='127.0.0.1', unix_socket='/var/run/mysqld/mysqld.sock', user='Smets', passwd='Thomas', db='Concept5')
 cur = conn.cursor()
 
 # Initial values
@@ -24,18 +24,14 @@ WantTemp = 20  # Desired temperature
 ActTemp = 0     # Actual temperature
 
 # PID controller setup
-pid = PID(1.0, 0.5, 0.01, setpoint=WantTemp)
+pid = PID(0.48, 0.0064, 0.06, setpoint=WantTemp)
 pid.sample_time = 1  # Update every second
 pid.output_limits = (0, 1)  # Limits output to PWM range (0 to 1)
 pid.auto_mode = True
 
-def read_cpu_temperature():
-    try:
-        with open("/sys/class/thermal/thermal_zone0/temp", 'r') as file:
-            return int(file.read().strip()) / 1000.0
-    except Exception as e:
-        print(f"Error reading CPU temperature: {e}")
-        return None
+Kp = 0.48
+Ki = 0.02
+Kd = 0.06
 
 def Read():
     return bmp280.temperature
@@ -46,14 +42,14 @@ def HeatControl():
     pid.setpoint = WantTemp  # Update setpoint dynamically
     control_output = pid(ActTemp)  # Get PID output
     Heat.value = control_output  # Apply output to heating element
-    print(f"Setpoint: {WantTemp}, Actual: {ActTemp}, Output: {control_output}")
+    print(f"Setpoint: {WantTemp}, Actual: {ActTemp}, Output: {control_output}, Kp: {Kp}, Ki: {Ki}, Kd: {Kd}")
 
 def main():
+    global Kp,Ki,Kd
     while True:
-        cpu_temp = read_cpu_temperature()
         HeatControl()
-        cur.execute("INSERT INTO CPUTemp(time, Temp, TempBMP, TempWant, y) VALUES (%s, %s, %s, %s, %s)",
-                    (strftime("%Y-%m-%d %H:%M:%S", gmtime()), cpu_temp, ActTemp, WantTemp, Heat.value * 100))
+        cur.execute("INSERT INTO Temp(time, TempBMP, TempWant, y, Kp, Ki, Kd) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                    (strftime("%Y-%m-%d %H:%M:%S", gmtime()), ActTemp, WantTemp, Heat.value * 10, Kp, Ki, Kd))
         conn.commit()
         sleep(1)
 
@@ -66,8 +62,32 @@ def index():
 @app.route('/TempSlider', methods=["POST"])
 def TempSlider():
     global WantTemp
-    WantTemp = int(request.form["getal"])
+    help = request.form["getal"]
+    print(help)
+    
+    print(type(help))
+    WantTemp = int(float(help))
+    print(WantTemp)
     return str(WantTemp)
+
+@app.route('/PSlider', methods=["POST"])
+def PSlider():
+    global Kp
+    Kp = float(request.form["getal"])
+    return str(Kp)
+
+@app.route('/ISlider', methods=["POST"])
+def ISlider():
+    global Ki
+    Ki = float(request.form["getal"])
+    return str(Ki)
+
+@app.route('/DSlider', methods=["POST"])
+def DSlider():
+    global Kd
+    Kd = float(request.form["getal"])
+    return str(Kd)
+
 
 @app.route('/dataoutW')
 def dataoutW():

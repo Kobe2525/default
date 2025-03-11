@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<info>
+	<infoitem key="UD_RS_USER" value="name:id_User;datatype:int,name:Username;datatype:blob,name:Password;datatype:blob" />
+</info>

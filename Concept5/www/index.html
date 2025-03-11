@@ -1,60 +1,50 @@
 <html>
 <head>
-<link rel="stylesheet" href="/www/style.css" />
-<title>Hello</title>
+    <link rel="stylesheet" href="/www/style.css" />
+    <title>Hello</title>
 </head>
 <body>
-    
+
     <p id="dataoutW">Wanted Temperature W = <span id="valueW">0</span></p>
     <p id="dataoutX">Actual Temperature X = <span id="valueX">0</span></p>
-    <p id="dataoutX">Verschil WX = <span id="valueWX">0</span></p>
-    <input id="temp-slider" type="range" min="0" max="40" value="20" onchange="TempSlider(this.value)" >
+    <p id="dataoutWX">Verschil WX = <span id="valueWX">0</span></p>
+    
+    <p class="mb-0"><input id="Temp-slider" type="range" step="1"  min="0" max="40" value="20" onchange="TempSlider(this.value)">Gewenste temperatuur</p>
+    <p class="mb-0"><input id="P-slider" type="range" step="0.1"  min="0" max="1" value="1" onchange="PSlider(this.value)">P-waarde</p>
+    <p class="mb-0"><input id="I-slider" type="range" step="0.1"  min="0" max="1" value="0" onchange="ISlider(this.value)">I-waarde</p>
+    <p class="mb-0"><input id="D-slider" type="range" step="0.1"  min="0" max="1" value="0" onchange="DSlider(this.value)">D-waarde</p>
+
+
     <p id="dataoutY">Airco = <span id="valueY">0</span></p>
     <div id="dataoutYP"></div>
+
+    <!-- PID Tuning Form -->
+    
+
     <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
-
     <script>
-
-        function ButtonWPos(nummer) {
-            $.post("/ButtonWPos", { "getal": nummer });
-        }       
-
-        function ButtonWNeg(nummer) {
-            $.post("/ButtonWNeg", { "getal": nummer });
-        }
-
-         function TempSlider(nummer) {
+        function TempSlider(nummer) {
             $.post("/TempSlider", { "getal": nummer });
         }
+        function PSlider(nummer) {
+            $.post("/PSlider", { "getal": nummer });
+        }
+        function ISlider(nummer) {
+            $.post("/ISlider", { "getal": nummer });
+        }
+        function DSlider(nummer) {
+            $.post("/DSlider", { "getal": nummer });
+        }
 
-
-
-        window.setInterval(function(){
-         $("#valueW").load("/dataoutW");  // Load the dynamic value into the span
-        }, 1000);
-
-        window.setInterval(function(){
-         $("#valueX").load("/dataoutX");  // Load the dynamic value into the span
-        }, 1000);
-
-        window.setInterval(function(){
-         $("#valueWX").load("/dataoutWX");  // Load the dynamic value into the span
-        }, 1000);
-
+        // Auto-refresh values
         window.setInterval(function () {
-            // Load the dynamic value into the span
-            $("#valueY").load("/dataoutY");  // Load the dynamic value into the span
+            $("#valueW").load("/dataoutW");
+            $("#valueX").load("/dataoutX");
+            $("#valueWX").load("/dataoutWX");
+            $("#valueY").load("/dataoutY");
+            $("#dataoutYP").load("/dataoutYP");
         }, 1000);
-
-        window.setInterval(function () {
-            // Load the dynamic value into the span
-            $("#dataoutYP").load("/dataoutYP");  // Load the dynamic value into the span
-        }, 1000);
-
-
-
-        
-
     </script>
+
 </body>
 </html>
