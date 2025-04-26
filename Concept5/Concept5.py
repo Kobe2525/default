@@ -12,8 +12,11 @@ Heat = PWMLED(5)
 
 # Create sensor object, communicating over the board's default I2C bus
 i2c = board.I2C()
-#bmp280 = adafruit_#bmp280.Adafruit_#BMP280_I2C(i2c, address=0x76)
-#bmp280.sea_level_pressure = 1013.25
+try:
+    bmp280 = adafruit_bmp280.Adafruit_BMP280_I2C(i2c, address=0x76)
+    bmp280.sea_level_pressure = 1013.25
+except:
+    pass
 
 # Database connection
 conn = pymysql.connect(host='127.0.0.1', unix_socket='/var/run/mysqld/mysqld.sock', user='Smets', passwd='Thomas', db='Concept5')
@@ -35,16 +38,15 @@ Kd = 0.06
 
 def Read():
     try:
-        helpA = bmp280.temperature
+        helpA =bmp280.temperature
     except: 
         helpA = 11
-    
+    print(helpA)
     return helpA
 
 def HeatControl():
-    global WantTemp, ActTemp
+    global WantTemp, ActTemp,control_output
     ActTemp = Read()
-    ActTemp = 10
     pid.setpoint = WantTemp  # Update setpoint dynamically
     control_output = pid(ActTemp)  # Get PID output
     Heat.value = control_output  # Apply output to heating element
@@ -54,8 +56,7 @@ def main():
     global Kp,Ki,Kd
     while True:
         HeatControl()
-        cur.execute("INSERT INTO Temp(time, TempBMP, TempWant, y, Kp, Ki, Kd) VALUES (%s, %s, %s, %s, %s, %s, %s)",
-                    (strftime("%Y-%m-%d %H:%M:%S", gmtime()), ActTemp, WantTemp, Heat.value *   , Kp, Ki, Kd))
+        cur.execute("INSERT INTO Temp(time, TempBMP, TempWant, y, Kp, Ki, Kd) VALUES (%s, %s, %s, %s, %s, %s, %s)",(strftime("%Y-%m-%d %H:%M:%S", gmtime()), ActTemp, WantTemp, Heat.value , Kp, Ki, Kd))
         conn.commit()
         sleep(1)
 
@@ -119,6 +120,17 @@ def dataoutD():
 def dataoutWX():
     global WantTemp,ActTemp
     return str(round(float(WantTemp - ActTemp), 2))
+
+@app.route('/dataoutYP')
+def dataoutYP():
+	global control_output
+	if control_output > 0:
+		image = "/www/static/fire.jpg"
+		return f'<img src="{image}" class="image" />'
+	elif control_output == 0:
+		return str ("")
+	else:
+		return str ("heeft een error")
 
 if __name__ == '__main__':
     _thread.start_new_thread(main, ())

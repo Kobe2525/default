@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Flask</title>
+        <!-- Favicon-->
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- Bootstrap icons-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="{{ url_for('static', filename='/static/style.css') }}" rel="stylesheet" />
+    
+    
+    
+    </head>
+    <body class="d-flex flex-column h-100">
+        <main class="flex-shrink-0">
+            <!-- Navigation-->
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                <div class="container px-5">
+                    <a class="navbar-brand" href="index.html">Start Bootstrap</a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                            <li class="nav-item"><a class="nav-link" href="http://10.212.51.23/Concept5/index.php">Home</a></li>
+                            <li class="nav-item"><a class="nav-link" href="http://10.212.51.23/Concept5/flask.php">Flask</a></li>
+                            <li class="nav-item"><a class="nav-link" href="http://10.212.51.23/Concept5/login.php">Login</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+             
+			<!-- Header-->
+            <header class="bg-dark py-5">
+                <div class="container px-5">
+                    <div class="row gx-5 align-items-center justify-content-center">
+                        <div class="col-lg-8 col-xl-7 col-xxl-6">
+                            <div class="my-5 text-center text-xl-start">
+                                <h1 class="display-5 fw-bolder text-white mb-2">Een pagina met de regeling.</h1>
+                                <p class="lead fw-normal text-white-50 mb-4"><div id="dataoutYP" width="100"></div></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <!-- Features section-->
+            <section class="py-5" id="features">
+                <div class="container px-5 my-5">
+                    <div class="row gx-5">
+						
+                        <div class="col-lg-4 mb-5 mb-lg-0"><h2 class="fw-bolder mb-0">Data.</h2>
+                            <p class="mb-0"> Speed Bucket (0-180) : <span id="valueBucketSpeed">0</span></p>
+                        </div>
+						
+                        <div class="col-lg-8">
+                            <div style="position: relative; width: 600px; margin: 0 auto;">
+                                <img id="base" src="/www/static/Body.drawio.png" alt="Base of Excavator">
+                                <img id="forearm" class="rotatable" src="/www/static/Forearm.drawio.png" alt="Forearm of Excavator" style="position: absolute; top: 122px; left: -358px; transform: rotate(0deg);">
+                            </div>
+                          <div class="row gx-5 row-cols-1 row-cols-md-2">
+                            <div class="col mb-5 h-100">
+                              <h2 class="h5">De Speed-Regelaar</h2>
+                              <p class="mb-0"><input id="Angle" type="range" min="-15" max="30" value="0" step="1" onchange="Angle(this.value)"> Angle : <span id="valueAngle">0</span></p>
+                              <p class="mb-0"><input id="BucketSpeed" type="range" min="0" max="100" value="50" step="1" onchange="BucketSpeed(this.value)"> Bucket Speed : <span id="valueBucket">0</span></p>
+                              <p class="mb-0"><input id="ConveyorSpeed" type="range" min="0" max="100" value="50" step="1" onchange="ConveyorSpeed(this.value)"> Conveyor Speed : <span id="valueConveyor">0</span></p>
+                              <p class="mb-0"><button onclick="ButtonPos(1)">Angle +</button></p>
+                              <p class="mb-0"><button onclick="ButtonMinus(-1)">Angle -</button></p>
+                              <p class="mb-0"><button onclick="ButtonCal(1)">Calibrate</button></p>
+                            </div>
+                          </div>
+                        </div>
+                        </div>
+                </div>
+            </section>
+          
+            
+            
+        </main>
+           
+	
+			
+        <!-- Footer-->
+        <footer class="bg-dark py-4 mt-auto">
+            <div class="container px-5">
+                <div class="row align-items-center justify-content-between flex-column flex-sm-row">
+                    <div class="col-auto"><div class="small m-0 text-white">Copyright &copy; Your Website 2023</div></div>
+                    <div class="col-auto">
+                        <a class="link-light small" href="#!">Privacy</a>
+                        <span class="text-white mx-1">&middot;</span>
+                        <a class="link-light small" href="#!">Terms</a>
+                        <span class="text-white mx-1">&middot;</span>
+                        <a class="link-light small" href="#!">Contact</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+        <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script>
+
+        const forearm = document.getElementById('forearm');
+        const angleSlider = document.getElementById('angle-slider');
+        const angleDisplay = document.getElementById('angle-display');
+
+        function Angle(nummer) {
+            $.post("/Angle", { "getal": nummer });
+        }
+        function BucketSpeed(nummer) {
+            $.post("/BucketSpeed", { "getal": nummer });
+        }
+        function ConveyorSpeed(nummer) {
+            $.post("/ConveyorSpeed", { "getal": nummer });
+        }
+        function ButtonPos(nummer) {
+            $.post("/ButtonPos", { "getal": nummer });
+        }
+        function ButtonNeg(nummer) {
+            $.post("/ButtonNeg", { "getal": nummer });
+        }
+        function ButtonCal(nummer) {
+            $.post("/ButtonCal", { "getal": nummer });
+        }
+
+        function Transform() {
+        $.get("/dataoutAngle", function(data) {
+            let angle = parseFloat(data); // Zorg dat het een getal is
+            document.getElementById("forearm").style.transform = `rotate(${angle}deg)`;
+            $("#valueAngle").load("/dataoutAngle");
+        });
+        }
+
+        // Auto-refresh values
+        window.setInterval(function () {
+            $("#valueBucket").load("/dataoutBucket");
+            $("#valueConveyor").load("/dataoutConveyor");
+            $("#valueBucketSpeed").load("/dataoutBucketSpeed");
+            Transform()
+        }, 100);
+    </script>
+    </body>
+<!-- InstanceEnd --></html>
