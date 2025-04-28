@@ -54,6 +54,7 @@
 						
                         <div class="col-lg-4 mb-5 mb-lg-0"><h2 class="fw-bolder mb-0">Data.</h2>
                             <p class="mb-0"> Speed Bucket (0-180) : <span id="valueBucketSpeed">0</span></p>
+                            <p class="mb-0"> Random tilt : <span id="valueRandomTilt">0</span></p>
                         </div>
 						
                         <div class="col-lg-8">
@@ -67,9 +68,10 @@
                               <p class="mb-0"><input id="Angle" type="range" min="-15" max="30" value="0" step="1" onchange="Angle(this.value)"> Angle : <span id="valueAngle">0</span></p>
                               <p class="mb-0"><input id="BucketSpeed" type="range" min="0" max="100" value="50" step="1" onchange="BucketSpeed(this.value)"> Bucket Speed : <span id="valueBucket">0</span></p>
                               <p class="mb-0"><input id="ConveyorSpeed" type="range" min="0" max="100" value="0" step="1" onchange="ConveyorSpeed(this.value)"> Conveyor Speed : <span id="valueConveyor">0</span></p>
-                              <p class="mb-0"><button onclick="ButtonPos(1)">Angle +</button></p>
+                              <p class="mb-0"><button onclick="ButtonAuto(1)">Press to automatically change tilt</button></p>
+                              <!-- <p class="mb-0"><button onclick="ButtonPos(1)">Angle +</button></p>
                               <p class="mb-0"><button onclick="ButtonMinus(-1)">Angle -</button></p>
-                              <p class="mb-0"><button onclick="ButtonCal(1)">Calibrate</button></p>
+                              <p class="mb-0"><button onclick="ButtonCal(1)">Calibrate</button></p> -->
                             </div>
                           </div>
                         </div>
@@ -127,6 +129,9 @@
         function ButtonCal(nummer) {
             $.post("/ButtonCal", { "getal": nummer });
         }
+        function ButtonAuto(nummer) {
+            $.post("/ButtonAuto", { "getal": nummer });
+        }
 
         function Transform() {
         $.get("/dataoutAngle", function(data) {
@@ -140,7 +145,8 @@
         window.setInterval(function () {
             $("#valueBucket").load("/dataoutBucket");
             $("#valueConveyor").load("/dataoutConveyor");
-            $("#valueBucketSpeed").load("/dataoutBucketSpeed");
+            $("#valueBucketSpeed").load("/dataoutBucketSpeed"); 
+            $("#valueRandomTilt").load("/dataoutRandomTilt");
             Transform()
         }, 100);
     </script>
