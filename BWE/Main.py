@@ -14,8 +14,11 @@ cur = conn.cursor()
 app = Flask(__name__, static_folder='www', template_folder='www')
 log = logging.getLogger('werkzeug')
 log.disabled = True
+log = logging.getLogger('werkzeug')
+log.disabled = True
 
 BucketPer = 50
+ConveyorPer = 0
 ConveyorPer = 0
 angle = 0
 RandomState = False
@@ -37,6 +40,12 @@ M1 = DigitalOutputDevice(23)
 M2 = DigitalOutputDevice(24)
 M1.off()
 M2.off()
+DIR = DigitalOutputDevice(20)  # Direction pin
+STEP = DigitalOutputDevice(21)  # Step pin
+M1 = DigitalOutputDevice(23)
+M2 = DigitalOutputDevice(24)
+M1.off()
+M2.off()
 
 def logDatabase():
 	global BucketPer, ConveyorPer, angle
@@ -49,8 +58,23 @@ def Conveyor():
 	global ConveyorPer
 	conveyor.value = ConveyorPer/100
 	#print("ConveyorSpeed= ", ConveyorPer)
+	global ConveyorPer
+	conveyor.value = ConveyorPer/100
+	#print("ConveyorSpeed= ", ConveyorPer)
 
 def Bucket():
+	global BucketPer, ServoSpeed
+	ServoSpeed = (BucketPer/100*180)
+	servo.angle = ServoSpeed
+	#print("ServoSpeed= ", ServoSpeed)
+
+def step_motor(step_pin, sleep_time, direction):
+	"""Performs a single step for the motor."""
+	DIR.value = direction
+	step_pin.on()
+	sleep(sleep_time)
+	step_pin.off()
+	sleep(sleep_time)
 	global BucketPer, ServoSpeed
 	ServoSpeed = (BucketPer/100*180)
 	servo.angle = ServoSpeed
@@ -146,9 +170,13 @@ def main():
 @app.route('/')
 def index():
 	return render_template('index.html')
+	return render_template('index.html')
 
 @app.route('/BucketSpeed', methods=["POST"])
 def BucketSpeed():
+	global BucketPer
+	BucketPer = float(request.form["getal"])
+	return str(BucketPer)
 	global BucketPer
 	BucketPer = float(request.form["getal"])
 	return str(BucketPer)
@@ -158,9 +186,15 @@ def Angle():
 	global angle
 	angle = float(request.form["getal"])
 	return str(angle)
+	global angle
+	angle = float(request.form["getal"])
+	return str(angle)
 
 @app.route('/ConveyorSpeed', methods=["POST"])
 def ConveyorSpeed():
+	global ConveyorPer
+	ConveyorPer = float(request.form["getal"])
+	return str(ConveyorPer)
 	global ConveyorPer
 	ConveyorPer = float(request.form["getal"])
 	return str(ConveyorPer)
@@ -203,15 +237,40 @@ def ButtonAuto():
 	print(RandomState)
 	Randomtilt()
 	return str(angle)
+	return str(angle) 
+
+@app.route('/ButtonAuto', methods=["POST"])
+def ButtonAuto():
+	global RandomState,getalRandom
+	RandomState = False
+	getalRandom += int(request.form["getal"])
+	print(getalRandom)
+	if getalRandom > 1:
+		getalRandom = 0
+	if getalRandom == 0:
+		RandomState = False
+	elif getalRandom == 1:
+		print("gdhjslgfkjh")
+		RandomState = True
+	print(getalRandom)
+	print(RandomState)
+	Randomtilt()
+	return str(angle)
 
 @app.route('/dataoutBucket')
 def dataoutBucket():
 	global BucketPer
 	HelpA = round(float(BucketPer), 2)
 	return str(HelpA)
+	global BucketPer
+	HelpA = round(float(BucketPer), 2)
+	return str(HelpA)
 
 @app.route('/dataoutConveyor')
 def dataoutConveyor():
+	global ConveyorPer
+	HelpA = round(float(ConveyorPer), 2)
+	return str(HelpA)
 	global ConveyorPer
 	HelpA = round(float(ConveyorPer), 2)
 	return str(HelpA)
@@ -227,6 +286,14 @@ def dataoutBucketSpeed():
 	global ServoSpeed
 	HelpA = round(float(ServoSpeed), 2)
 	return str(HelpA)
+	global ServoSpeed
+	HelpA = round(float(ServoSpeed), 2)
+	return str(HelpA)
+
+@app.route('/dataoutRandomTilt')
+def dataoutRandomTilt():
+	global RandomState
+	return str(RandomState)
 
 @app.route('/dataoutRandomTilt')
 def dataoutRandomTilt():
@@ -235,5 +302,7 @@ def dataoutRandomTilt():
 
 
 if __name__ == '__main__':
+	_thread.start_new_thread(main, ())
+	app.run(debug=True, host='0.0.0.0', port=5050, use_reloader=False)
 	_thread.start_new_thread(main, ())
 	app.run(debug=True, host='0.0.0.0', port=5050, use_reloader=False)

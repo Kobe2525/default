@@ -55,6 +55,7 @@
                         <div class="col-lg-4 mb-5 mb-lg-0"><h2 class="fw-bolder mb-0">Data.</h2>
                             <p class="mb-0"> Speed Bucket (0-180) : <span id="valueBucketSpeed">0</span></p>
                             <p class="mb-0"> Random tilt : <span id="valueRandomTilt">0</span></p>
+                            <p class="mb-0"> Random tilt : <span id="valueRandomTilt">0</span></p>
                         </div>
 						
                         <div class="col-lg-8">
@@ -71,6 +72,7 @@
                               <p class="mb-0"><button onclick="ButtonAuto(1)">Press to automatically change tilt</button></p>
                               <!-- <p class="mb-0"><button onclick="ButtonPos(1)">Angle +</button></p>
                               <p class="mb-0"><button onclick="ButtonMinus(-1)">Angle -</button></p>
+                              <p class="mb-0"><button onclick="ButtonCal(1)">Calibrate</button></p> -->
                               <p class="mb-0"><button onclick="ButtonCal(1)">Calibrate</button></p> -->
                             </div>
                           </div>
@@ -128,6 +130,9 @@
         }
         function ButtonCal(nummer) {
             $.post("/ButtonCal", { "getal": nummer });
+        }
+        function ButtonAuto(nummer) {
+            $.post("/ButtonAuto", { "getal": nummer });
         }
         function ButtonAuto(nummer) {
             $.post("/ButtonAuto", { "getal": nummer });
